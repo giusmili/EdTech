@@ -6,10 +6,10 @@
   --color-lgc-cream: #f5f2ed;
   --color-lgc-orange: #e94e33;
   --color-lgc-ink: #121212;
-  --color-lgc-gray: #8e8d8a;
+  --color-lgc-gray: #5e5d5a;
   --border-soft: rgba(0, 0, 0, 0.1);
   --border-faint: rgba(0, 0, 0, 0.05);
-  --ink-soft: rgba(18, 18, 18, 0.7);
+  --ink-soft: rgba(18, 18, 18, 0.82);
 }
 
 *,
@@ -917,11 +917,11 @@ textarea {
 }
 
 [class~="opacity-30"] {
-  opacity: 0.3;
+  opacity: 0.45;
 }
 
 [class~="opacity-40"] {
-  opacity: 0.4;
+  opacity: 0.58;
 }
 
 [class~="opacity-60"] {
