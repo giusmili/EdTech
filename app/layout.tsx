@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Poppins, Space_Grotesk } from "next/font/google";
 import './globals.css';
+import MoleculeBackground from '@/src/MoleculeBackground';
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -35,6 +36,7 @@ export default function RootLayout({
       <body
         className={`${poppins.className} ${poppins.variable} ${playfair.variable} ${spaceGrotesk.variable}`}
       >
+        <MoleculeBackground />
         {children}
       </body>
     </html>
