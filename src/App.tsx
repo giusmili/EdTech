@@ -929,7 +929,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-lgc-cream max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col">
+    <div className="min-h-screen bg-lgc-cream max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(245, 242, 237, 0.88)' }}>
       {/* Editorial Watermark */}
       <div className="absolute top-0 right-0 p-12 text-[120px] font-sans font-black text-black/[0.03] select-none leading-none rotate-90 origin-top-right translate-y-24">
         MARCH
