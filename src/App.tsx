@@ -688,8 +688,8 @@ const SpacedRepetition = ({ cards, onReview }: { cards: Flashcard[], onReview: (
 
       <div className="relative overflow-hidden group" style={{ height: '180px' }}>
         <img
-          src="https://picsum.photos/seed/memory-neuron/900/360?grayscale"
-          alt="Illustration mémoire"
+          src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=900&h=360&q=70"
+          alt="Étudiants en sciences"
           className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700"
           referrerPolicy="no-referrer"
         />
