@@ -693,7 +693,7 @@ const SpacedRepetition = ({ cards, onReview }: { cards: Flashcard[], onReview: (
         <img
           src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&h=400&q=75"
           alt="Étudiants en sciences"
-          className="w-full h-full object-cover opacity-75 hover:scale-105 transition-transform duration-700"
+          className="w-full h-full object-cover opacity-40 hover:scale-105 transition-transform duration-700"
           referrerPolicy="no-referrer"
         />
       </div>
