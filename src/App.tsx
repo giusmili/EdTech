@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Home, Map, BookOpen, Clock, Gamepad2, User, ChevronRight, CheckCircle2 } from 'lucide-react';
 import type { ModuleType, LearningStep, UserProgress, Flashcard } from './types';
+import MoleculeBackground from './MoleculeBackground';
 
 // Functional Initial State
 const INITIAL_STEPS: LearningStep[] = [
@@ -426,11 +427,12 @@ const Cartography = ({ onNavigate }: { onNavigate: (tab: ModuleType) => void }) 
       </header>
 
       <div className="flex-1 bg-white border border-black/5 relative overflow-hidden">
+        <MoleculeBackground color="#121212" n={45} fixed={false} />
         <p className="absolute top-4 left-6 text-[10px] uppercase font-black tracking-[0.4em] text-lgc-orange z-10">
           Touchez un nœud pour interagir
         </p>
 
-        <svg viewBox="0 0 560 380" className="w-full h-full" style={{ minHeight: 280 }}>
+        <svg viewBox="0 0 560 380" className="w-full h-full" style={{ minHeight: 280, position: 'relative', zIndex: 1 }}>
           <defs>
             <filter id="glow-node" x="-60%" y="-60%" width="220%" height="220%">
               <feGaussianBlur stdDeviation="5" result="blur"/>
