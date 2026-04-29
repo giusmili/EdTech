@@ -80,15 +80,17 @@ export default function MoleculeBackground() {
         if (p.y > height) { p.y = height; p.vy = -Math.abs(p.vy); }
       }
 
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 5;
       for (let i = 0; i < pts.length; i++) {
         for (let j = i + 1; j < pts.length; j++) {
           const dx = pts[i].x - pts[j].x;
           const dy = pts[i].y - pts[j].y;
           const d = Math.hypot(dx, dy);
           if (d < LINK_DIST) {
-            ctx.globalAlpha = (1 - d / LINK_DIST) * 0.45;
+            ctx.globalAlpha = (1 - d / LINK_DIST) * 0.5;
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 0.6;
+            ctx.lineWidth = 0.7;
             ctx.beginPath();
             ctx.moveTo(pts[i].x, pts[i].y);
             ctx.lineTo(pts[j].x, pts[j].y);
@@ -97,7 +99,8 @@ export default function MoleculeBackground() {
         }
       }
 
-      ctx.globalAlpha = 0.6;
+      ctx.shadowBlur = 12;
+      ctx.globalAlpha = 0.75;
       ctx.fillStyle = '#ffffff';
       for (const p of pts) {
         ctx.beginPath();
@@ -105,6 +108,7 @@ export default function MoleculeBackground() {
         ctx.fill();
       }
 
+      ctx.shadowBlur = 0;
       ctx.globalAlpha = 1;
       raf.current = requestAnimationFrame(tick);
     };
