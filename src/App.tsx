@@ -172,18 +172,23 @@ const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserPro
     </div>
 
     {/* Bannière matières */}
-    <div className="relative overflow-hidden bg-lgc-ink text-white rounded-sm">
-      {/* Dot grid */}
-      <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
-      {/* Accent left */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-lgc-orange" />
-      {/* Watermark */}
-      <div className="absolute right-4 bottom-0 text-[72px] font-black leading-none select-none pointer-events-none" style={{ color: 'rgba(255,255,255,0.03)' }}>SCIENCES</div>
+    <div className="space-y-6">
 
-      <div className="relative p-8 flex gap-10 items-start">
+      {/* Photo */}
+      <div className="overflow-hidden rounded-sm" style={{ height: '180px' }}>
+        <img
+          src="https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=900&h=360&q=75"
+          alt="Sciences"
+          className="w-full h-full object-cover opacity-50 hover:scale-105 transition-transform duration-700"
+          referrerPolicy="no-referrer"
+        />
+      </div>
+
+      {/* Contenu */}
+      <div className="flex gap-10 items-start">
 
         {/* Matières à réviser */}
-        <div className="flex-1 space-y-5">
+        <div className="flex-1 space-y-4">
           <div>
             <p className="text-[9px] uppercase font-bold tracking-[0.35em] opacity-40">Matières à réviser</p>
             <h3 className="text-2xl font-sans font-black mt-1 tracking-tighter">Priorités du jour</h3>
@@ -195,12 +200,12 @@ const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserPro
               </span>
             ))}
             {['Atome', 'Énergie', 'Lumière'].map((s, i) => (
-              <span key={i} className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest" style={{ border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.35)' }}>
+              <span key={i} className="px-3 py-1 border border-black/10 text-[10px] font-bold uppercase tracking-widest opacity-40">
                 {s}
               </span>
             ))}
           </div>
-          <p className="text-[9px] font-sans italic opacity-25">Basé sur ton historique d'apprentissage</p>
+          <p className="text-[9px] font-sans italic opacity-30">Basé sur ton historique d'apprentissage</p>
         </div>
 
         {/* Barres de maîtrise */}
@@ -216,7 +221,7 @@ const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserPro
                 <span className="text-[9px] font-bold uppercase tracking-widest opacity-50">{label}</span>
                 <span className="text-[9px] font-mono opacity-40">{pct}%</span>
               </div>
-              <div className="h-[2px] w-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <div className="h-[2px] w-full bg-black/5">
                 <div className="h-full bg-lgc-orange transition-all" style={{ width: `${pct}%` }} />
               </div>
             </div>
