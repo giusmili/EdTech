@@ -405,59 +405,169 @@ const SeriousGames = ({ onComplete }: { onComplete: () => void }) => {
   );
 };
 
-const Cartography = ({ onNavigate }: { onNavigate: (tab: ModuleType) => void }) => (
-  <div className="h-full flex flex-col p-10 space-y-10">
-    <header className="border-b border-black/10 pb-8">
-      <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Vue cartographique</p>
-      <h1 className="text-6xl font-sans font-black tracking-tighter leading-none mt-1">Spatial Index</h1>
-    </header>
-    <div className="flex-1 bg-white border border-black/5 relative overflow-hidden flex items-center justify-center p-8">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#000_1px,_transparent_1px)] bg-[size:32px_32px] opacity-[0.03]" />
-      <div className="absolute top-0 left-0 p-6 bg-transparent z-20">
-        <p className="text-[10px] uppercase font-black tracking-[0.4em] text-lgc-orange">Touchez un nœud pour interagir</p>
-      </div>
-      <div className="relative w-full h-full flex items-center justify-center">
-        <div className="relative w-64 h-64 scale-110">
-           {/* Center node */}
-           <motion.div 
-            initial={{ scale: 0 }} animate={{ scale: 1 }}
-            className="absolute w-20 h-20 bg-black rounded-full flex items-center justify-center text-white shadow-2xl z-20"
-            style={{ top: 'calc(50% - 2.5rem)', left: 'calc(50% - 2.5rem)' }}
-           >
-              <p className="text-[10px] font-bold uppercase tracking-widest">Noyau</p>
-           </motion.div>
+const Cartography = ({ onNavigate }: { onNavigate: (tab: ModuleType) => void }) => {
+  const CX = 280, CY = 185;
+  const R1 = 95, R2 = 155;
+  const DEG = Math.PI / 180;
+  const NR = 26;
 
-           {/* Satellites */}
-           {[
-             { label: '01', top: '5%', left: '5%', moduleId: 'M5' },
-             { label: '02', top: '5%', left: '73%', moduleId: 'M6' },
-             { label: '03', top: '80%', left: '10%', moduleId: 'M3' },
-             { label: '04', top: '80%', left: '75%', moduleId: 'M2' }
-           ].map((node, i) => (
-             <motion.div 
-               key={i}
-               initial={{ opacity: 0, scale: 0 }}
-               animate={{ opacity: 1, scale: 1 }}
-               transition={{ delay: i * 0.1 }}
-               onClick={() => onNavigate(node.moduleId as ModuleType)}
-               className="absolute w-14 h-14 bg-lgc-cream border border-black/10 rounded-full shadow-sm z-10 flex items-center justify-center overflow-hidden hover:bg-lgc-orange hover:text-white transition-colors cursor-pointer group"
-               style={{ top: node.top, left: node.left }}
-             >
-               <span className="text-[10px] font-black uppercase group-hover:scale-125 transition-transform">{node.label}</span>
-             </motion.div>
-           ))}
+  const nodes = [
+    { id: 'M5' as ModuleType, label: "L'Atome",  sub: 'COURS',   time: 'T=12mn', angle: -45,  r: R1, active: true  },
+    { id: 'M6' as ModuleType, label: 'Symboles',  sub: 'QUIZ',    time: 'T=10mn', angle: -135, r: R1, active: false },
+    { id: 'M3' as ModuleType, label: 'Neural',    sub: 'MÉMOIRE', time: 'T=5mn',  angle:  45,  r: R2, active: false },
+    { id: 'M2' as ModuleType, label: 'Dashboard', sub: 'HUB',     time: 'T=—',    angle: 135,  r: R2, active: false },
+  ];
 
-           <svg className="absolute inset-0 w-full h-full -z-0 opacity-10">
-              <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="black" strokeWidth="0.5" />
-              <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="black" strokeWidth="0.5" />
-              <line x1="50%" y1="50%" x2="25%" y2="80%" stroke="black" strokeWidth="0.5" />
-              <line x1="50%" y1="50%" x2="75%" y2="80%" stroke="black" strokeWidth="0.5" />
-           </svg>
-        </div>
+  return (
+    <div className="h-full flex flex-col p-10 space-y-10">
+      <header className="border-b border-black/10 pb-8">
+        <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Vue cartographique</p>
+        <h1 className="text-6xl font-sans font-black tracking-tighter leading-none mt-1">Spatial Index</h1>
+      </header>
+
+      <div className="flex-1 bg-white border border-black/5 relative overflow-hidden">
+        <p className="absolute top-4 left-6 text-[10px] uppercase font-black tracking-[0.4em] text-lgc-orange z-10">
+          Touchez un nœud pour interagir
+        </p>
+
+        <svg viewBox="0 0 560 380" className="w-full h-full" style={{ minHeight: 280 }}>
+          <defs>
+            <filter id="glow-node" x="-60%" y="-60%" width="220%" height="220%">
+              <feGaussianBlur stdDeviation="5" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <pattern id="dotgrid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="0.8" cy="0.8" r="0.65" fill="rgba(0,0,0,0.065)"/>
+            </pattern>
+          </defs>
+
+          {/* Dot grid */}
+          <rect width="560" height="380" fill="url(#dotgrid)"/>
+
+          {/* Crosshair axes */}
+          <line x1={CX} y1="15" x2={CX} y2="365" stroke="rgba(0,0,0,0.045)" strokeWidth="0.8"/>
+          <line x1="15" y1={CY} x2="545" y2={CY} stroke="rgba(0,0,0,0.045)" strokeWidth="0.8"/>
+          <text x={CX+4} y="24" fill="rgba(0,0,0,0.18)" fontSize="6.5" fontFamily="monospace">↑ Y</text>
+          <text x="528" y={CY-3} fill="rgba(0,0,0,0.18)" fontSize="6.5" fontFamily="monospace">X →</text>
+
+          {/* Orbit tick marks */}
+          {[0,45,90,135,180,225,270,315].map(a => (
+            <g key={a}>
+              <line
+                x1={CX+(R1-5)*Math.cos(a*DEG)} y1={CY+(R1-5)*Math.sin(a*DEG)}
+                x2={CX+(R1+5)*Math.cos(a*DEG)} y2={CY+(R1+5)*Math.sin(a*DEG)}
+                stroke="rgba(0,0,0,0.1)" strokeWidth="0.8"
+              />
+              <line
+                x1={CX+(R2-5)*Math.cos(a*DEG)} y1={CY+(R2-5)*Math.sin(a*DEG)}
+                x2={CX+(R2+5)*Math.cos(a*DEG)} y2={CY+(R2+5)*Math.sin(a*DEG)}
+                stroke="rgba(0,0,0,0.07)" strokeWidth="0.8"
+              />
+            </g>
+          ))}
+
+          {/* Animated orbital rings */}
+          <circle cx={CX} cy={CY} r={R1} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="0.8" strokeDasharray="5 8">
+            <animateTransform attributeName="transform" type="rotate"
+              from={`0 ${CX} ${CY}`} to={`360 ${CX} ${CY}`} dur="25s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx={CX} cy={CY} r={R2} fill="none" stroke="rgba(0,0,0,0.07)" strokeWidth="0.8" strokeDasharray="8 12">
+            <animateTransform attributeName="transform" type="rotate"
+              from={`0 ${CX} ${CY}`} to={`-360 ${CX} ${CY}`} dur="40s" repeatCount="indefinite"/>
+          </circle>
+
+          {/* Orbit radius labels */}
+          <text x={CX+R1+4} y={CY-3} fill="rgba(0,0,0,0.2)" fontSize="6" fontFamily="monospace">r₁={R1}</text>
+          <text x={CX+R2+4} y={CY-3} fill="rgba(0,0,0,0.15)" fontSize="6" fontFamily="monospace">r₂={R2}</text>
+
+          {/* Connection lines */}
+          {nodes.map(n => {
+            const nx = CX + n.r * Math.cos(n.angle * DEG);
+            const ny = CY + n.r * Math.sin(n.angle * DEG);
+            return (
+              <line key={`l-${n.id}`}
+                x1={CX} y1={CY} x2={nx} y2={ny}
+                stroke={n.active ? 'rgba(233,78,51,0.5)' : 'rgba(0,0,0,0.1)'}
+                strokeWidth={n.active ? 0.9 : 0.7}
+                strokeDasharray="3 5"
+              />
+            );
+          })}
+
+          {/* Nucleus pulsing ring */}
+          <circle cx={CX} cy={CY} r="52" fill="none" stroke="rgba(0,0,0,0.05)" strokeWidth="1">
+            <animate attributeName="r" values="50;62;50" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.25;0.03;0.25" dur="3s" repeatCount="indefinite"/>
+          </circle>
+
+          {/* Nucleus */}
+          <circle cx={CX} cy={CY} r="42" fill="#111"/>
+          <circle cx={CX} cy={CY} r="42" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
+          <circle cx={CX} cy={CY} r="34" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" strokeDasharray="2 3"/>
+          <text x={CX} y={CY-5} textAnchor="middle" fill="white" fontSize="7.5" fontWeight="900" letterSpacing="3" fontFamily="monospace">NOYAU</text>
+          <text x={CX} y={CY+7} textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="5.5" letterSpacing="2" fontFamily="monospace">CENTRAL</text>
+          <text x={CX} y={CY+19} textAnchor="middle" fill="rgba(233,78,51,0.6)" fontSize="5.5" letterSpacing="1" fontFamily="monospace">∅{R1*2}u</text>
+
+          {/* Satellite nodes */}
+          {nodes.map((n, i) => {
+            const nx = CX + n.r * Math.cos(n.angle * DEG);
+            const ny = CY + n.r * Math.sin(n.angle * DEG);
+            const isRight = Math.cos(n.angle * DEG) > 0;
+            const lx = nx + (NR + 14) * Math.cos(n.angle * DEG);
+            const ly = ny + (NR + 14) * Math.sin(n.angle * DEG);
+            const anchor = isRight ? 'start' : 'end';
+
+            return (
+              <g key={n.id} onClick={() => onNavigate(n.id)} style={{ cursor: 'pointer' }}>
+                {n.active && (
+                  <circle cx={nx} cy={ny} r={NR+4} fill="rgba(233,78,51,0.1)">
+                    <animate attributeName="r" values={`${NR+3};${NR+11};${NR+3}`} dur="2.5s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="0.2;0.04;0.2" dur="2.5s" repeatCount="indefinite"/>
+                  </circle>
+                )}
+                <circle cx={nx} cy={ny} r={NR}
+                  fill={n.active ? '#e94e33' : '#f5f2ed'}
+                  stroke={n.active ? '#e94e33' : 'rgba(0,0,0,0.15)'}
+                  strokeWidth="1"
+                  filter={n.active ? 'url(#glow-node)' : undefined}
+                />
+                <circle cx={nx} cy={ny} r={NR-7}
+                  fill="none"
+                  stroke={n.active ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.1)'}
+                  strokeWidth="0.6" strokeDasharray="2 3"
+                />
+                <text x={nx} y={ny+1} textAnchor="middle" dominantBaseline="middle"
+                  fill={n.active ? 'white' : '#121212'}
+                  fontSize="9" fontWeight="900" letterSpacing="1" fontFamily="monospace"
+                >
+                  0{i+1}
+                </text>
+                <text x={lx} y={ly-4} textAnchor={anchor}
+                  fill={n.active ? '#e94e33' : 'rgba(0,0,0,0.65)'}
+                  fontSize="7.5" fontWeight="900" letterSpacing="1.5" fontFamily="monospace"
+                >
+                  {n.label.toUpperCase()}
+                </text>
+                <text x={lx} y={ly+7} textAnchor={anchor}
+                  fill="rgba(0,0,0,0.32)" fontSize="5.5" letterSpacing="1" fontFamily="monospace"
+                >
+                  [{n.sub}] · {n.time}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Corner metadata */}
+          <text x="10" y="373" fill="rgba(0,0,0,0.15)" fontSize="6" fontFamily="monospace">LGC_MAP v2.1</text>
+          <text x="455" y="373" fill="rgba(0,0,0,0.15)" fontSize="6" fontFamily="monospace">N=4 · Ω=2</text>
+        </svg>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // SM2 Algorithm
 const calculateSM2 = (quality: number, prevInterval: number, prevRepetition: number, prevEfactor: number) => {
