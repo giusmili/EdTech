@@ -139,17 +139,22 @@ const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserPro
 
     <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
       <div className="md:col-span-7 bg-lgc-ink text-lgc-cream p-10 rounded-sm space-y-6 shadow-2xl relative overflow-hidden group min-h-[300px] flex flex-col justify-center">
-        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-          <Clock size={160} className="rotate-12" />
-        </div>
-        <div>
+        {/* Photo scientifique en transparence */}
+        <img
+          src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=900&h=600&q=80"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-luminosity group-hover:opacity-30 transition-opacity duration-700"
+          referrerPolicy="no-referrer"
+        />
+        <div className="relative z-10">
           <span className="text-[10px] uppercase tracking-widest font-bold opacity-40">Objectif en cours</span>
           <h2 className="text-5xl font-sans mt-2 leading-tight">{activeGoal || "Aucun objectif"}</h2>
           {!activeGoal && <p className="mt-4 text-xs leading-relaxed opacity-70">Définis ton premier objectif pour commencer ton aventure.</p>}
         </div>
-        <button 
+        <button
           onClick={onStartSession}
-          className="btn-primary w-fit mt-6 bg-white text-black hover:bg-lgc-orange hover:text-white"
+          className="btn-primary w-fit mt-6 bg-white text-black hover:bg-lgc-orange hover:text-white relative z-10"
         >
           {activeGoal ? 'Continuer le parcours' : 'Définir un objectif'}
         </button>
@@ -168,66 +173,6 @@ const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserPro
              <div className="h-full bg-black" style={{ width: `${(progress.completedLessons.length / 21) * 100}%` }}></div>
           </div>
         </div>
-      </div>
-    </div>
-
-    {/* Bannière matières */}
-    <div className="space-y-6">
-
-      {/* Photo */}
-      <div className="overflow-hidden rounded-sm" style={{ height: '180px' }}>
-        <img
-          src="https://images.unsplash.com/photo-1576086213369-97a306d36557?auto=format&fit=crop&w=900&h=360&q=75"
-          alt="Sciences"
-          className="w-full h-full object-cover opacity-50 hover:scale-105 transition-transform duration-700"
-          referrerPolicy="no-referrer"
-        />
-      </div>
-
-      {/* Contenu */}
-      <div className="flex gap-10 items-start">
-
-        {/* Matières à réviser */}
-        <div className="flex-1 space-y-4">
-          <div>
-            <p className="text-[9px] uppercase font-bold tracking-[0.35em] opacity-40">Matières à réviser</p>
-            <h3 className="text-2xl font-sans font-black mt-1 tracking-tighter">Priorités du jour</h3>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {progress.subjectsToReview.map((s, i) => (
-              <span key={i} className="px-3 py-1 bg-lgc-orange text-white text-[10px] font-bold uppercase tracking-widest">
-                {s}
-              </span>
-            ))}
-            {['Atome', 'Énergie', 'Lumière'].map((s, i) => (
-              <span key={i} className="px-3 py-1 border border-black/10 text-[10px] font-bold uppercase tracking-widest opacity-40">
-                {s}
-              </span>
-            ))}
-          </div>
-          <p className="text-[9px] font-sans italic opacity-30">Basé sur ton historique d'apprentissage</p>
-        </div>
-
-        {/* Barres de maîtrise */}
-        <div className="space-y-4 shrink-0" style={{ minWidth: '150px' }}>
-          <p className="text-[9px] uppercase font-bold tracking-[0.35em] opacity-40">Maîtrise</p>
-          {[
-            { label: 'Physique', pct: 72 },
-            { label: 'Chimie',   pct: 45 },
-            { label: 'Ondes',    pct: 18 },
-          ].map(({ label, pct }) => (
-            <div key={label} className="space-y-1">
-              <div className="flex justify-between items-baseline">
-                <span className="text-[9px] font-bold uppercase tracking-widest opacity-50">{label}</span>
-                <span className="text-[9px] font-mono opacity-40">{pct}%</span>
-              </div>
-              <div className="h-[2px] w-full bg-black/5">
-                <div className="h-full bg-lgc-orange transition-all" style={{ width: `${pct}%` }} />
-              </div>
-            </div>
-          ))}
-        </div>
-
       </div>
     </div>
 
