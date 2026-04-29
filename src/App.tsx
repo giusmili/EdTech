@@ -170,6 +170,62 @@ const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserPro
         </div>
       </div>
     </div>
+
+    {/* Bannière matières */}
+    <div className="relative overflow-hidden bg-lgc-ink text-white rounded-sm">
+      {/* Dot grid */}
+      <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)', backgroundSize: '18px 18px' }} />
+      {/* Accent left */}
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-lgc-orange" />
+      {/* Watermark */}
+      <div className="absolute right-4 bottom-0 text-[72px] font-black leading-none select-none pointer-events-none" style={{ color: 'rgba(255,255,255,0.03)' }}>SCIENCES</div>
+
+      <div className="relative p-8 flex gap-10 items-start">
+
+        {/* Matières à réviser */}
+        <div className="flex-1 space-y-5">
+          <div>
+            <p className="text-[9px] uppercase font-bold tracking-[0.35em] opacity-40">Matières à réviser</p>
+            <h3 className="text-2xl font-sans font-black mt-1 tracking-tighter">Priorités du jour</h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {progress.subjectsToReview.map((s, i) => (
+              <span key={i} className="px-3 py-1 bg-lgc-orange text-white text-[10px] font-bold uppercase tracking-widest">
+                {s}
+              </span>
+            ))}
+            {['Atome', 'Énergie', 'Lumière'].map((s, i) => (
+              <span key={i} className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest" style={{ border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.35)' }}>
+                {s}
+              </span>
+            ))}
+          </div>
+          <p className="text-[9px] font-sans italic opacity-25">Basé sur ton historique d'apprentissage</p>
+        </div>
+
+        {/* Barres de maîtrise */}
+        <div className="space-y-4 shrink-0" style={{ minWidth: '150px' }}>
+          <p className="text-[9px] uppercase font-bold tracking-[0.35em] opacity-40">Maîtrise</p>
+          {[
+            { label: 'Physique', pct: 72 },
+            { label: 'Chimie',   pct: 45 },
+            { label: 'Ondes',    pct: 18 },
+          ].map(({ label, pct }) => (
+            <div key={label} className="space-y-1">
+              <div className="flex justify-between items-baseline">
+                <span className="text-[9px] font-bold uppercase tracking-widest opacity-50">{label}</span>
+                <span className="text-[9px] font-mono opacity-40">{pct}%</span>
+              </div>
+              <div className="h-[2px] w-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <div className="h-full bg-lgc-orange transition-all" style={{ width: `${pct}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+
   </div>
 );
 
