@@ -508,8 +508,8 @@ const Cartography = ({ onNavigate }: { onNavigate: (tab: ModuleType) => void }) 
           <circle cx={CX} cy={CY} r="42" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1"/>
           <circle cx={CX} cy={CY} r="34" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.6" strokeDasharray="2 3"/>
           <text x={CX} y={CY-5} textAnchor="middle" fill="white" fontSize="7.5" fontWeight="900" letterSpacing="3" fontFamily="monospace">NOYAU</text>
-          <text x={CX} y={CY+7} textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="5.5" letterSpacing="2" fontFamily="monospace">CENTRAL</text>
-          <text x={CX} y={CY+19} textAnchor="middle" fill="rgba(233,78,51,0.6)" fontSize="5.5" letterSpacing="1" fontFamily="monospace">∅{R1*2}u</text>
+          <text x={CX} y={CY+7} textAnchor="middle" fill="rgba(255,255,255,0.65)" fontSize="5.5" letterSpacing="2" fontFamily="monospace">CENTRAL</text>
+          <text x={CX} y={CY+19} textAnchor="middle" fill="rgba(233,78,51,0.95)" fontSize="5.5" letterSpacing="1" fontFamily="monospace">∅{R1*2}u</text>
 
           {/* Satellite nodes */}
           {nodes.map((n, i) => {
