@@ -474,6 +474,11 @@ textarea {
   margin-bottom: 2rem;
 }
 
+/* baseline padding for white containers — overridden by any explicit p-* class */
+[class~="bg-white"] {
+  padding: 1rem;
+}
+
 [class~="p-4"] {
   padding: 1rem;
 }
