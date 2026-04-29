@@ -683,7 +683,7 @@ const SpacedRepetition = ({ cards, onReview }: { cards: Flashcard[], onReview: (
       <header className="border-b border-black/10 pb-8">
         <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Répétition Espacée</p>
         <h1 className="text-6xl font-sans font-black tracking-tighter leading-none mt-2">Séance de rappel</h1>
-        <p className="text-sm font-sans italic opacity-40 mt-3 leading-relaxed">
+        <p className="text-sm font-sans italic opacity-40 mt-8 pt-6 border-t border-black/5 leading-relaxed">
           L'algorithme SM-2 planifie chaque révision au moment optimal pour ancrer la mémoire à long terme.
         </p>
       </header>
