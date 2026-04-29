@@ -604,60 +604,72 @@ const SpacedRepetition = ({ cards, onReview }: { cards: Flashcard[], onReview: (
   const [isFlipped, setIsFlipped] = useState(false);
 
   const dueCards = useMemo(() => cards.filter(c => c.nextReview <= Date.now()), [cards]);
+  const scheduledCards = useMemo(() => cards.filter(c => c.nextReview > Date.now()), [cards]);
+
+  const daysUntil = (ts: number) => {
+    const d = Math.ceil((ts - Date.now()) / (1000 * 60 * 60 * 24));
+    return d === 1 ? 'demain' : `dans ${d} j`;
+  };
 
   if (view === 'review' && dueCards.length > 0) {
     const card = dueCards[currentIndex];
     return (
       <div className="p-10 space-y-12 animate-in fade-in duration-500">
         <header className="flex justify-between items-center border-b border-black/10 pb-8">
-          <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Recall Session</p>
-          <span className="font-mono text-xs">{currentIndex + 1} / {dueCards.length}</span>
+          <div>
+            <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Séance de rappel</p>
+            <p className="text-xs opacity-40 mt-1 font-sans">Évalue ton souvenir pour chaque carte</p>
+          </div>
+          <span className="font-mono text-xs bg-black/5 px-3 py-1">{currentIndex + 1} / {dueCards.length}</span>
         </header>
 
         <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] perspective-1000">
-          <motion.div 
+          <motion.div
             animate={{ rotateY: isFlipped ? 180 : 0 }}
             className="w-full h-full relative preserve-3d cursor-pointer"
             onClick={() => setIsFlipped(!isFlipped)}
           >
-            {/* Front */}
             <div className={`absolute inset-0 bg-white border border-black/10 p-12 flex flex-col items-center justify-center text-center backface-hidden ${isFlipped ? 'invisible' : 'visible'}`}>
-              <p className="text-[10px] uppercase font-bold opacity-20 mb-8">Question</p>
+              <p className="text-[10px] uppercase font-bold opacity-20 mb-8 tracking-widest">Question</p>
               <h2 className="text-3xl font-sans italic">{card.question}</h2>
-              <p className="mt-12 text-[10px] uppercase font-bold tracking-widest opacity-40">Tap to flip</p>
+              <p className="mt-12 text-[10px] uppercase font-bold tracking-widest opacity-40">— Cliquer pour révéler —</p>
             </div>
-            {/* Back */}
             <div className={`absolute inset-0 bg-black text-white border border-black/10 p-12 flex flex-col items-center justify-center text-center backface-hidden rotate-y-180 ${isFlipped ? 'visible' : 'invisible'}`}>
-              <p className="text-[10px] uppercase font-bold opacity-40 mb-8">Answer</p>
+              <p className="text-[10px] uppercase font-bold opacity-40 mb-8 tracking-widest">Réponse</p>
               <h2 className="text-3xl font-sans">{card.answer}</h2>
+              <p className="mt-10 text-[10px] uppercase font-bold tracking-widest opacity-30">Comment tu t'en es souvenu ?</p>
             </div>
           </motion.div>
         </div>
 
         {isFlipped && (
-          <div className="grid grid-cols-4 gap-2 animate-in slide-in-from-bottom-4">
-            {[
-              { q: 0, label: 'Again', color: 'bg-red-500' },
-              { q: 2, label: 'Hard', color: 'bg-orange-400' },
-              { q: 3, label: 'Good', color: 'bg-green-500' },
-              { q: 5, label: 'Easy', color: 'bg-blue-500' }
-            ].map(btn => (
-              <button
-                key={btn.q}
-                onClick={() => {
-                  onReview(card.id, btn.q);
-                  setIsFlipped(false);
-                  if (currentIndex < dueCards.length - 1) {
-                    setCurrentIndex(prev => prev + 1);
-                  } else {
-                    setView('list');
-                  }
-                }}
-                className={`${btn.color} text-white py-4 text-[8px] uppercase font-bold tracking-tighter`}
-              >
-                {btn.label}
-              </button>
-            ))}
+          <div className="space-y-3 animate-in slide-in-from-bottom-4">
+            <p className="text-[9px] uppercase font-bold tracking-[0.3em] opacity-40 text-center">Évalue ton souvenir</p>
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { q: 0, label: 'À revoir',  sub: 'Oublié',      color: 'bg-red-500'    },
+                { q: 2, label: 'Difficile', sub: 'Hésitation',  color: 'bg-orange-400' },
+                { q: 3, label: 'Bien',      sub: 'Retrouvé',    color: 'bg-green-500'  },
+                { q: 5, label: 'Facile',    sub: 'Immédiat',    color: 'bg-blue-500'   },
+              ].map(btn => (
+                <button
+                  key={btn.q}
+                  onClick={() => {
+                    onReview(card.id, btn.q);
+                    setIsFlipped(false);
+                    if (currentIndex < dueCards.length - 1) {
+                      setCurrentIndex(prev => prev + 1);
+                    } else {
+                      setView('list');
+                    }
+                  }}
+                  className={`${btn.color} text-white py-4 flex flex-col items-center gap-1`}
+                >
+                  <span className="text-[9px] uppercase font-bold tracking-widest">{btn.label}</span>
+                  <span className="text-[7px] opacity-70">{btn.sub}</span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -667,38 +679,57 @@ const SpacedRepetition = ({ cards, onReview }: { cards: Flashcard[], onReview: (
   return (
     <div className="p-10 space-y-12">
       <header className="border-b border-black/10 pb-8">
-        <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Neural Engine</p>
-        <h1 className="text-6xl font-sans font-black tracking-tighter leading-none mt-1">Retention</h1>
+        <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Répétition Espacée</p>
+        <h1 className="text-6xl font-sans font-black tracking-tighter leading-none mt-1">Séance de rappel</h1>
+        <p className="text-xs font-sans italic opacity-40 mt-3">
+          L'algorithme SM-2 programme chaque révision au moment idéal pour ancrer la mémoire à long terme.
+        </p>
       </header>
 
       <div className="space-y-0 divide-y divide-black/5">
         {dueCards.length > 0 ? (
           <div className="py-10 bg-black text-white p-10 space-y-6">
-            <h3 className="text-4xl font-sans italic">{dueCards.length} cartes à réviser</h3>
-            <p className="text-xs opacity-60">Ta mémoire a besoin d'un rafraîchissement sur ces concepts.</p>
-            <button onClick={() => setView('review')} className="btn-primary w-full bg-white text-black">
-              Lancer la session
+            <div className="flex items-baseline gap-4">
+              <h3 className="text-4xl font-sans italic">{dueCards.length} carte{dueCards.length > 1 ? 's' : ''} à rappeler</h3>
+              <span className="text-[10px] uppercase font-bold opacity-30 tracking-widest">aujourd'hui</span>
+            </div>
+            <p className="text-xs opacity-60 leading-relaxed">
+              Ces concepts sont au seuil de l'oubli. Une révision maintenant multiplie la durée de rétention.
+            </p>
+            <button onClick={() => { setCurrentIndex(0); setView('review'); }} className="btn-primary w-full bg-white text-black">
+              Commencer la séance
             </button>
           </div>
         ) : (
           <div className="py-20 text-center space-y-4">
             <CheckCircle2 size={40} className="mx-auto opacity-10" />
             <h3 className="text-2xl font-sans italic opacity-30">Mémoire à jour</h3>
-            <p className="text-[10px] uppercase font-bold tracking-widest opacity-20">Reviens plus tard</p>
+            <p className="text-[10px] uppercase font-bold tracking-widest opacity-20">Aucune révision due pour l'instant</p>
           </div>
         )}
-        
-        {cards.filter(c => c.nextReview > Date.now()).map((item, i) => (
-          <div key={i} className="py-10 flex flex-col gap-4 opacity-40">
-            <div className="flex justify-between items-baseline mb-2">
-              <span className="text-[9px] font-bold uppercase tracking-[0.3em]">
-                {new Date(item.nextReview).toLocaleDateString()}
-              </span>
-              <span className="text-[10px] font-mono opacity-20">LVL: {item.repetition}</span>
-            </div>
-            <h3 className="font-sans text-3xl font-black tracking-tight">{item.question}</h3>
+
+        {scheduledCards.length > 0 && (
+          <div className="pt-10 space-y-0 divide-y divide-black/5">
+            <p className="text-[9px] uppercase font-bold tracking-[0.3em] opacity-40 pb-4">Prochaines révisions planifiées</p>
+            {scheduledCards.map((item, i) => (
+              <div key={i} className="py-6 flex items-center gap-6 opacity-50 hover:opacity-80 transition-opacity">
+                <div className="flex-1">
+                  <h3 className="font-sans text-lg font-black tracking-tight">{item.question}</h3>
+                  <div className="flex gap-3 mt-2 items-center">
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-lgc-orange">{daysUntil(item.nextReview)}</span>
+                    <span className="text-[9px] font-mono opacity-40">·</span>
+                    <span className="text-[9px] font-mono opacity-40">Niveau {item.repetition}</span>
+                    <div className="flex gap-0.5 ml-1">
+                      {[...Array(5)].map((_, j) => (
+                        <div key={j} className={`h-[3px] w-3 ${j < item.repetition ? 'bg-lgc-orange' : 'bg-black/10'}`} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
