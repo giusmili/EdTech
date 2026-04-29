@@ -599,6 +599,16 @@ textarea {
   margin-top: 3rem;
 }
 
+/* border-radius par défaut sur tous les conteneurs visibles
+   placé avant rounded-* pour que rounded-full (cercles) l'emporte */
+[class~="bg-white"],
+[class~="bg-black"],
+[class~="bg-lgc-ink"],
+[class~="bg-lgc-orange"],
+[class~="border"] {
+  border-radius: 4px;
+}
+
 [class~="rounded-sm"] {
   border-radius: 2px;
 }
