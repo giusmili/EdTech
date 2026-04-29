@@ -19,12 +19,15 @@
 }
 
 html {
-  background: var(--color-lgc-cream);
+  background-image: radial-gradient(ellipse at top, #1e3a6e 0%, #ffffff 100%);
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 100vh;
 }
 
 body {
   margin: 0;
-  background: var(--color-lgc-cream);
+  background: transparent;
   color: var(--color-lgc-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
