@@ -10,8 +10,8 @@ interface Particle {
   r: number;
 }
 
-const N = 55;
-const LINK_DIST = 130;
+const N = 75;
+const LINK_DIST = 160;
 const REPEL_DIST = 110;
 const REPEL_FORCE = 0.9;
 const BASE_SPEED = 0.25;
@@ -86,8 +86,8 @@ export default function MoleculeBackground() {
           const dy = pts[i].y - pts[j].y;
           const d = Math.hypot(dx, dy);
           if (d < LINK_DIST) {
-            ctx.globalAlpha = (1 - d / LINK_DIST) * 0.18;
-            ctx.strokeStyle = '#121212';
+            ctx.globalAlpha = (1 - d / LINK_DIST) * 0.45;
+            ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 0.6;
             ctx.beginPath();
             ctx.moveTo(pts[i].x, pts[i].y);
@@ -97,8 +97,8 @@ export default function MoleculeBackground() {
         }
       }
 
-      ctx.globalAlpha = 0.28;
-      ctx.fillStyle = '#121212';
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = '#ffffff';
       for (const p of pts) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
