@@ -330,7 +330,8 @@ const SeriousGames = ({ onComplete }: { onComplete: () => void }) => {
                 initial={{ scale: 0, rotate: -45 }}
                 animate={{ scale: i < stars ? 1 : 0.5, rotate: 0 }}
                 transition={{ delay: 0.3 + (i * 0.1) }}
-                className={`text-4xl ${i < stars ? 'text-black' : 'text-black/10'}`}
+                className="text-4xl"
+                style={{ color: i < stars ? '#f59e0b' : 'rgba(0,0,0,0.1)' }}
               >
                 ★
               </motion.div>
