@@ -10,13 +10,18 @@ interface Particle {
   r: number;
 }
 
-const N = 75;
+interface Props {
+  color?: string;
+  n?: number;
+  fixed?: boolean;
+}
+
 const LINK_DIST = 160;
 const REPEL_DIST = 110;
 const REPEL_FORCE = 0.9;
 const BASE_SPEED = 0.25;
 
-export default function MoleculeBackground() {
+export default function MoleculeBackground({ color = '#ffffff', n = 75, fixed = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouse = useRef({ x: -9999, y: -9999 });
   const particles = useRef<Particle[]>([]);
@@ -34,7 +39,7 @@ export default function MoleculeBackground() {
     };
     resize();
 
-    particles.current = Array.from({ length: N }, () => ({
+    particles.current = Array.from({ length: n }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
       vx: (Math.random() - 0.5) * BASE_SPEED * 2,
@@ -80,7 +85,7 @@ export default function MoleculeBackground() {
         if (p.y > height) { p.y = height; p.vy = -Math.abs(p.vy); }
       }
 
-      ctx.shadowColor = '#ffffff';
+      ctx.shadowColor = color;
       ctx.shadowBlur = 5;
       for (let i = 0; i < pts.length; i++) {
         for (let j = i + 1; j < pts.length; j++) {
@@ -89,7 +94,7 @@ export default function MoleculeBackground() {
           const d = Math.hypot(dx, dy);
           if (d < LINK_DIST) {
             ctx.globalAlpha = (1 - d / LINK_DIST) * 0.5;
-            ctx.strokeStyle = '#ffffff';
+            ctx.strokeStyle = color;
             ctx.lineWidth = 0.7;
             ctx.beginPath();
             ctx.moveTo(pts[i].x, pts[i].y);
@@ -101,7 +106,7 @@ export default function MoleculeBackground() {
 
       ctx.shadowBlur = 12;
       ctx.globalAlpha = 0.75;
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = color;
       for (const p of pts) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -119,7 +124,7 @@ export default function MoleculeBackground() {
       cancelAnimationFrame(raf.current);
       ro.disconnect();
     };
-  }, []);
+  }, [color, n]);
 
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -143,7 +148,14 @@ export default function MoleculeBackground() {
   return (
     <canvas
       ref={canvasRef}
-      style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', pointerEvents: 'none', zIndex: 0 }}
+      style={{
+        position: fixed ? 'fixed' : 'absolute',
+        top: 0, left: 0,
+        width: fixed ? '100vw' : '100%',
+        height: fixed ? '100vh' : '100%',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }}
     />
   );
 }
