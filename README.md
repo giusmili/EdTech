@@ -1,6 +1,6 @@
 # La Grande Classe
 
-Plateforme d'apprentissage adaptative et visuelle — Classe Virtuelle.  
+Plateforme d'apprentissage adaptative et visuelle, Classe Virtuelle.  
 Application migrée vers Next.js avec App Router, en conservant la structure visuelle et la charte graphique existantes.
 
 ## Stack
