@@ -686,6 +686,20 @@ const SpacedRepetition = ({ cards, onReview }: { cards: Flashcard[], onReview: (
         </p>
       </header>
 
+      <div className="relative overflow-hidden group" style={{ height: '180px' }}>
+        <img
+          src="https://picsum.photos/seed/memory-neuron/900/360?grayscale"
+          alt="Illustration mémoire"
+          className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700"
+          referrerPolicy="no-referrer"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-lgc-cream to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-6 flex justify-between items-end">
+          <p className="text-[10px] uppercase font-bold tracking-widest text-lgc-orange">Ancrage mémoriel</p>
+          <p className="text-[9px] font-mono opacity-40">SM-2 · Ebbinghaus curve</p>
+        </div>
+      </div>
+
       <div className="space-y-0 divide-y divide-black/5">
         {dueCards.length > 0 ? (
           <div className="py-10 bg-black text-white p-10 space-y-6">
