@@ -677,74 +677,80 @@ const SpacedRepetition = ({ cards, onReview }: { cards: Flashcard[], onReview: (
   }
 
   return (
-    <div className="p-10 space-y-12">
+    <div className="p-10 space-y-10">
+
+      {/* Header */}
       <header className="border-b border-black/10 pb-8">
         <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Répétition Espacée</p>
-        <h1 className="text-6xl font-sans font-black tracking-tighter leading-none mt-1">Séance de rappel</h1>
-        <p className="text-xs font-sans italic opacity-40 mt-3">
-          L'algorithme SM-2 programme chaque révision au moment idéal pour ancrer la mémoire à long terme.
+        <h1 className="text-6xl font-sans font-black tracking-tighter leading-none mt-2">Séance de rappel</h1>
+        <p className="text-sm font-sans italic opacity-40 mt-3 leading-relaxed">
+          L'algorithme SM-2 planifie chaque révision au moment optimal pour ancrer la mémoire à long terme.
         </p>
       </header>
 
-      <div className="relative overflow-hidden group" style={{ height: '180px' }}>
+      {/* Image — propre, sans texte superposé */}
+      <div className="overflow-hidden rounded-sm" style={{ height: '200px' }}>
         <img
-          src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=900&h=360&q=70"
+          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&h=400&q=75"
           alt="Étudiants en sciences"
-          className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700"
+          className="w-full h-full object-cover opacity-75 hover:scale-105 transition-transform duration-700"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-lgc-cream to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-6 flex justify-between items-end">
-          <p className="text-[10px] uppercase font-bold tracking-widest text-lgc-orange">Ancrage mémoriel</p>
-          <p className="text-[9px] font-mono opacity-40">SM-2 · Ebbinghaus curve</p>
-        </div>
       </div>
 
-      <div className="space-y-0 divide-y divide-black/5">
-        {dueCards.length > 0 ? (
-          <div className="py-10 bg-black text-white p-10 space-y-6">
-            <div className="flex items-baseline gap-4">
-              <h3 className="text-4xl font-sans italic">{dueCards.length} carte{dueCards.length > 1 ? 's' : ''} à rappeler</h3>
-              <span className="text-[10px] uppercase font-bold opacity-30 tracking-widest">aujourd'hui</span>
+      {/* Bloc principal */}
+      {dueCards.length > 0 ? (
+        <div className="bg-black text-white p-8 space-y-6">
+          <div>
+            <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40">À réviser maintenant</p>
+            <div className="flex items-baseline gap-3 mt-3">
+              <span className="text-7xl font-sans font-black tracking-tighter leading-none">{dueCards.length}</span>
+              <span className="text-2xl font-sans italic opacity-50">carte{dueCards.length > 1 ? 's' : ''}</span>
             </div>
-            <p className="text-xs opacity-60 leading-relaxed">
+            <p className="text-xs opacity-50 mt-3 leading-relaxed">
               Ces concepts sont au seuil de l'oubli. Une révision maintenant multiplie la durée de rétention.
             </p>
-            <button onClick={() => { setCurrentIndex(0); setView('review'); }} className="btn-primary w-full bg-white text-black">
-              Commencer la séance
-            </button>
           </div>
-        ) : (
-          <div className="py-20 text-center space-y-4">
-            <CheckCircle2 size={40} className="mx-auto opacity-10" />
-            <h3 className="text-2xl font-sans italic opacity-30">Mémoire à jour</h3>
-            <p className="text-[10px] uppercase font-bold tracking-widest opacity-20">Aucune révision due pour l'instant</p>
-          </div>
-        )}
+          <button
+            onClick={() => { setCurrentIndex(0); setView('review'); }}
+            className="btn-primary w-full bg-white text-black"
+          >
+            Commencer la séance
+          </button>
+        </div>
+      ) : (
+        <div className="py-16 text-center space-y-3 border border-black/5">
+          <CheckCircle2 size={32} className="mx-auto opacity-10" />
+          <h3 className="text-xl font-sans font-black opacity-20">Mémoire à jour</h3>
+          <p className="text-[10px] uppercase font-bold tracking-widest opacity-15">Aucune révision due pour l'instant</p>
+        </div>
+      )}
 
-        {scheduledCards.length > 0 && (
-          <div className="pt-10 space-y-0 divide-y divide-black/5">
-            <p className="text-[9px] uppercase font-bold tracking-[0.3em] opacity-40 pb-4">Prochaines révisions planifiées</p>
+      {/* Cartes planifiées */}
+      {scheduledCards.length > 0 && (
+        <section className="space-y-4">
+          <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40">Prochaines révisions</p>
+          <div className="divide-y divide-black/5">
             {scheduledCards.map((item, i) => (
-              <div key={i} className="py-6 flex items-center gap-6 opacity-50 hover:opacity-80 transition-opacity">
-                <div className="flex-1">
-                  <h3 className="font-sans text-lg font-black tracking-tight">{item.question}</h3>
-                  <div className="flex gap-3 mt-2 items-center">
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-lgc-orange">{daysUntil(item.nextReview)}</span>
-                    <span className="text-[9px] font-mono opacity-40">·</span>
-                    <span className="text-[9px] font-mono opacity-40">Niveau {item.repetition}</span>
-                    <div className="flex gap-0.5 ml-1">
-                      {[...Array(5)].map((_, j) => (
-                        <div key={j} className={`h-[3px] w-3 ${j < item.repetition ? 'bg-lgc-orange' : 'bg-black/10'}`} />
-                      ))}
-                    </div>
+              <div key={i} className="py-5 flex items-center gap-6">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-sans font-black text-base tracking-tight">{item.question}</h3>
+                  <p className="text-xs font-sans italic opacity-40 mt-0.5 truncate">{item.answer}</p>
+                </div>
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-lgc-orange">{daysUntil(item.nextReview)}</span>
+                  <div className="flex gap-0.5">
+                    {[...Array(5)].map((_, j) => (
+                      <div key={j} className={`h-[3px] w-4 ${j < item.repetition ? 'bg-lgc-orange' : 'bg-black/10'}`} />
+                    ))}
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </section>
+      )}
+
     </div>
   );
 };
