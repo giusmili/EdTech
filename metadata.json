@@ -1,0 +1,6 @@
+{
+  "name": "La Grande Classe",
+  "description": "Plateforme d'apprentissage adaptative et visuelle - Classe Virtuelle",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["REACH_GOALS", "LEARN_SKILLS", "GAMIFICATION"]
+}
