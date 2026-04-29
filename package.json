@@ -6,7 +6,8 @@
     "dev": "next dev --hostname 0.0.0.0 --port 3000",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "ship": "git push origin dev && git checkout master && git merge dev --no-ff -m \"merge: sync depuis dev\" && git push origin master && git checkout dev"
   },
   "dependencies": {
     "lucide-react": "^0.546.0",
