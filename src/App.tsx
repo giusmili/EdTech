@@ -138,7 +138,7 @@ const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserPro
     </header>
 
     <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-      <div className="md:col-span-7 bg-lgc-ink text-lgc-cream p-10 rounded-sm space-y-6 shadow-2xl relative overflow-hidden group min-h-[300px] flex flex-col justify-center">
+      <div className="md:col-span-7 text-lgc-cream p-10 rounded-sm space-y-6 shadow-2xl relative overflow-hidden group min-h-[300px] flex flex-col justify-center" style={{ backgroundColor: '#3a3a3a' }}>
         {/* Photo scientifique en transparence */}
         <img
           src="/assets/ban.png"
@@ -234,14 +234,14 @@ const CourseReader = ({ onComplete }: { onComplete: () => void }) => {
 
       <div className="flex gap-4 pt-6 border-t border-black/10">
         {page < 2 ? (
-          <button 
+          <button type="button"
             onClick={() => setPage(page + 1)}
             className="flex-1 py-4 bg-black text-white text-[10px] uppercase font-bold tracking-[0.3em] hover:bg-lgc-orange transition-all"
           >
             Continuer
           </button>
         ) : (
-          <button 
+          <button type="button"
             onClick={onComplete}
             className="flex-1 py-4 bg-lgc-orange text-white text-[10px] uppercase font-bold tracking-[0.3em] active:scale-95 transition-all"
           >
