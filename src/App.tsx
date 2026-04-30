@@ -141,8 +141,8 @@ const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserPro
       <div className="md:col-span-7 bg-lgc-ink text-lgc-cream p-10 rounded-sm space-y-6 shadow-2xl relative overflow-hidden group min-h-[300px] flex flex-col justify-center">
         {/* Photo scientifique en transparence */}
         <img
-          src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=900&h=600&q=80"
-          alt=""
+          src="/assets/ban.png"
+          alt="banniere scientifique"
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-luminosity group-hover:opacity-30 transition-opacity duration-700"
           referrerPolicy="no-referrer"
@@ -174,6 +174,14 @@ const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserPro
           </div>
         </div>
       </div>
+    </div>
+
+    <div className="border-t border-black/10 pt-8 space-y-3">
+      <p className="text-xs uppercase tracking-[0.25em] font-bold text-lgc-orange">La Grande Classe</p>
+      <p className="text-lg font-sans leading-relaxed max-w-2xl opacity-80">
+        Votre espace d'apprentissage personnalisé. Chaque session, chaque leçon, chaque rappel te rapproche de ton objectif à ton rythme, avec méthode.
+      </p>
+      <p className="text-xs font-mono opacity-40 mt-2">Mémorisation espacée · Parcours adaptatif · Suivi de progression</p>
     </div>
 
   </div>
@@ -430,7 +438,7 @@ const Cartography = ({ onNavigate }: { onNavigate: (tab: ModuleType) => void }) 
     <div className="h-full flex flex-col p-10 space-y-10">
       <header className="border-b border-black/10 pb-8">
         <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Vue cartographique</p>
-        <h1 className="text-6xl font-sans font-black tracking-tighter leading-none mt-1">Spatial Index</h1>
+        <h1 className="text-6xl font-sans font-black tracking-tighter leading-none mt-1">Index spatial</h1>
       </header>
 
       <div className="flex-1 bg-white border border-black/5 relative overflow-hidden">
@@ -697,7 +705,7 @@ const SpacedRepetition = ({ cards, onReview }: { cards: Flashcard[], onReview: (
       {/* Image — propre, sans texte superposé */}
       <div className="overflow-hidden rounded-sm" style={{ height: '200px' }}>
         <img
-          src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&h=400&q=75"
+          src="/assets/ban.png"
           alt="Étudiants en sciences"
           className="w-full h-full object-cover opacity-40 hover:scale-105 transition-transform duration-700"
           referrerPolicy="no-referrer"
