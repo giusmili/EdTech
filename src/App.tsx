@@ -7,7 +7,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Map, BookOpen, Clock, Gamepad2, User, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Home, Map, BookOpen, Clock, Gamepad2, User, ChevronRight, CheckCircle2, LogOut, Eye, EyeOff } from 'lucide-react';
 import type { ModuleType, LearningStep, UserProgress, Flashcard } from './types';
 import MoleculeBackground from './MoleculeBackground';
 
@@ -81,6 +81,118 @@ const persistState = async (state: PersistedState) => {
   });
 };
 
+const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('lgc-session', JSON.stringify({ username: data.username }));
+        onLogin(data.username);
+      } else {
+        setError('Identifiants incorrects');
+      }
+    } catch {
+      setError('Erreur de connexion');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="login-page min-h-screen bg-lgc-cream max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(245, 242, 237, 0.88)' }}>
+      <div className="absolute top-0 right-0 p-12 text-[120px] font-sans font-black text-black/[0.03] select-none leading-none rotate-90 origin-top-right translate-y-24">LGC</div>
+      <div className="flex-1 flex items-center justify-center p-10">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="w-full max-w-sm space-y-10"
+      >
+        <header className="space-y-2 text-center">
+          <p className="text-2xl font-sans font-black tracking-tight leading-tight mb-6">Apprends mieux.<br /><span className="text-lgc-orange">Retiens plus.</span></p>
+          <img src="/assets/ban.png" alt="La Grande Classe" className="w-full object-cover mb-4" style={{ borderRadius: '4px', maxHeight: '160px' }} />
+          <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]" style={{ paddingTop: '1rem' }}>La Grande Classe</p>
+          <h1 className="text-6xl font-sans font-black leading-none">Connexion</h1>
+          <p className="text-sm opacity-40 font-sans italic pt-1">Accédez à votre espace d'apprentissage</p>
+        </header>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-[10px] uppercase font-bold tracking-widest opacity-50">Identifiant</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full bg-white border border-black/10 p-4 font-sans text-lg outline-none focus:border-lgc-orange transition-colors"
+              placeholder="ex: giusmili"
+              autoComplete="username"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="block text-[10px] uppercase font-bold tracking-widest opacity-50">Mot de passe</label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-white border border-black/10 p-4 pr-12 font-sans text-lg outline-none focus:border-lgc-orange transition-colors"
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 opacity-30 hover:opacity-80 transition-opacity bg-transparent border-none"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-lgc-orange text-xs font-mono tracking-wide"
+            >
+              {error}
+            </motion.p>
+          )}
+
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              disabled={isLoading || !username.trim() || !password.trim()}
+              className="btn-primary btn-dark min-w-[400px] py-4 text-base"
+            >
+              {isLoading ? 'Connexion en cours…' : 'Se connecter'}
+            </button>
+          </div>
+        </form>
+
+      </motion.div>
+      </div>
+      <footer className="border-t border-black/10 px-10 py-6 text-center">
+        <p className="text-[10px] uppercase tracking-[0.35em] font-black text-lgc-orange">Edtech · LGC R&amp;D · 2026</p>
+      </footer>
+    </div>
+  );
+};
+
 const GoalSetting = ({ onComplete }: { onComplete: (goal: string) => void }) => {
   const [goal, setGoal] = useState('');
   return (
@@ -127,12 +239,12 @@ const GoalSetting = ({ onComplete }: { onComplete: (goal: string) => void }) => 
   );
 };
 
-const Dashboard = ({ progress, activeGoal, onStartSession }: { progress: UserProgress, activeGoal: string | null, onStartSession: () => void }) => (
+const Dashboard = ({ progress, activeGoal, onStartSession, username }: { progress: UserProgress, activeGoal: string | null, onStartSession: () => void, username: string }) => (
   <div className="p-10 space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
     <header className="flex justify-between items-end border-b border-black/10 pb-8">
       <div>
         <p className="text-lgc-orange font-bold text-[10px] uppercase tracking-[0.2em]">Tableau de Bord</p>
-        <h1 className="text-6xl font-sans font-black mt-1 leading-none">Léa</h1>
+        <h1 className="text-6xl font-sans font-black mt-1 leading-none">Bonjour {username}</h1>
       </div>
       <div className="w-12 h-12 border border-black/20 rounded-full flex items-center justify-center font-sans text-xl border-lgc-orange text-lgc-orange">L</div>
     </header>
@@ -821,6 +933,8 @@ const PersonalizedProgram = () => (
 );
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState('');
   const [activeTab, setActiveTab] = useState<ModuleType>('M2');
   const [isHydrated, setIsHydrated] = useState(false);
   const [progress, setProgress] = useState<UserProgress>({
@@ -836,6 +950,19 @@ export default function App() {
     { id: 'f1', question: 'Quelle est la charge du proton ?', answer: 'Positive (+)', interval: 0, repetition: 0, efactor: 2.5, nextReview: Date.now() },
     { id: 'f2', question: 'De quoi est composé le noyau atomique ?', answer: 'Protons et Neutrons', interval: 0, repetition: 0, efactor: 2.5, nextReview: Date.now() - 1000 },
   ]);
+
+  useEffect(() => {
+    const session = localStorage.getItem('lgc-session');
+    if (session) {
+      try {
+        const { username } = JSON.parse(session);
+        setLoggedInUser(username);
+        setIsAuthenticated(true);
+      } catch {
+        localStorage.removeItem('lgc-session');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -919,6 +1046,12 @@ export default function App() {
     setActiveTab('M4');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('lgc-session');
+    setIsAuthenticated(false);
+    setLoggedInUser('');
+  };
+
   const navItems = [
     { id: 'M2', label: 'Dashboard', icon: Home },
     { id: 'M1', label: 'Carte', icon: Map },
@@ -929,7 +1062,7 @@ export default function App() {
 
   const renderModule = () => {
     switch (activeTab) {
-      case 'M2': return <Dashboard progress={progress} activeGoal={progress.activeGoal} onStartSession={() => setActiveTab(progress.activeGoal ? 'M4' : 'M4_GOAL')} />;
+      case 'M2': return <Dashboard progress={progress} activeGoal={progress.activeGoal} onStartSession={() => setActiveTab(progress.activeGoal ? 'M4' : 'M4_GOAL')} username={loggedInUser} />;
       case 'M1': return <Cartography onNavigate={setActiveTab} />;
       case 'M4_GOAL': return <GoalSetting onComplete={handleGoalComplete} />;
       case 'M4': return (
@@ -995,6 +1128,15 @@ export default function App() {
     }
   };
 
+  if (!isAuthenticated) {
+    return (
+      <>
+        <MoleculeBackground />
+        <LoginScreen onLogin={(username) => { setLoggedInUser(username); setIsAuthenticated(true); }} />
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-lgc-cream max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(245, 242, 237, 0.88)' }}>
       {/* Editorial Watermark */}
@@ -1004,12 +1146,12 @@ export default function App() {
 
       {/* Navigation Bar - Artistic Header nav */}
       <nav className="sticky top-0 left-0 right-0 bg-lgc-cream/80 backdrop-blur-md z-50 font-sans">
-        <div className="max-w-5xl mx-auto grid grid-cols-5 h-20">
+        <div className="max-w-5xl mx-auto flex items-stretch h-20">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id as ModuleType)}
-              className={`flex items-center justify-center gap-2 px-3 transition-all group relative ${
+              className={`flex-1 flex items-center justify-center gap-2 px-3 transition-all group relative ${
                 activeTab === item.id ? 'text-lgc-orange' : 'text-black opacity-30 hover:opacity-100'
               }`}
             >
@@ -1018,13 +1160,20 @@ export default function App() {
                 {item.label}
               </span>
               {activeTab === item.id && (
-                <motion.div 
+                <motion.div
                   layoutId="activeTabMarker"
                   className="absolute bottom-0 left-4 right-4 h-0.5 bg-lgc-orange"
                 />
               )}
             </button>
           ))}
+          <button
+            onClick={handleLogout}
+            className="flex-shrink-0 flex items-center justify-center gap-2 px-4 transition-all group relative text-black opacity-30 hover:opacity-100 hover:text-lgc-orange"
+          >
+            <LogOut size={14} strokeWidth={3} className="opacity-40 group-hover:opacity-100" />
+            <span className="text-[9px] uppercase tracking-widest font-black opacity-0 lg:opacity-30 group-hover:opacity-100 transition-all">Quitter</span>
+          </button>
         </div>
       </nav>
       
