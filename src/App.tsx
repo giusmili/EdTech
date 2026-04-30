@@ -304,13 +304,14 @@ const SeriousGames = ({ onComplete }: { onComplete: () => void }) => {
           </h2>
           
           <div className="aspect-video bg-white border border-black/5 flex items-center justify-center relative overflow-hidden group cursor-pointer" role="button" onClick={() => setShowHint(!showHint)}>
+            <img src="/assets/groupe.png" alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover opacity-10" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_#000_1px,_transparent_1px)] bg-[size:16px_16px] opacity-5"></div>
             {showHint ? (
               <p className="text-xs font-serif italic text-lgc-orange p-8 text-center animate-in fade-in slide-in-from-bottom-2">
                 "Pense à ce que Démocrite faisait avec son morceau de pain..."
               </p>
             ) : (
-              <p className="text-[10px] uppercase font-bold tracking-widest opacity-20 group-hover:opacity-100 transition-opacity">Tap for hint</p>
+              <p className="text-[10px] uppercase font-bold tracking-widest opacity-20 group-hover:opacity-100 transition-opacity">Cliquer pour un indice</p>
             )}
           </div>
 
