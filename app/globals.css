@@ -98,6 +98,16 @@ textarea {
   background: var(--color-lgc-orange);
 }
 
+.btn-dark {
+  background: #222 !important;
+  transition: opacity 0.3s ease-in-out !important;
+}
+
+.btn-dark:hover {
+  background: #222 !important;
+  opacity: 0.45;
+}
+
 .glass-card {
   background: rgba(255, 255, 255, 0.4);
 /*   backdrop-filter: blur(8px); */
@@ -493,6 +503,10 @@ textarea {
 
 [class~="p-10"] {
   padding: 2.5rem;
+}
+
+.login-page [class~="p-10"] {
+  padding-top: 0.8rem;
 }
 
 [class~="p-12"] {
