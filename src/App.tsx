@@ -7,9 +7,10 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, Map, BookOpen, Clock, Gamepad2, User, ChevronRight, CheckCircle2, LogOut, Eye, EyeOff } from 'lucide-react';
+import { Home, Map, BookOpen, Clock, Gamepad2, User, ChevronRight, CheckCircle2, LogOut, Eye, EyeOff, MessageCircle } from 'lucide-react';
 import type { ModuleType, LearningStep, UserProgress, Flashcard } from './types';
 import MoleculeBackground from './MoleculeBackground';
+import StudentHelpChatbotModal from './components/StudentHelpChatbotModal';
 
 // Functional Initial State
 const INITIAL_STEPS: LearningStep[] = [
@@ -90,8 +91,20 @@ const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError('');
+    if (!username.trim() && !password.trim()) {
+      setError('Veuillez renseigner votre identifiant et votre mot de passe.');
+      return;
+    }
+    if (!username.trim()) {
+      setError('Veuillez renseigner votre identifiant.');
+      return;
+    }
+    if (!password.trim()) {
+      setError('Veuillez renseigner votre mot de passe.');
+      return;
+    }
+    setIsLoading(true);
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
@@ -113,7 +126,7 @@ const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
   };
 
   return (
-    <div className="login-page min-h-screen bg-lgc-cream max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(245, 242, 237, 0.88)' }}>
+    <div className="login-page min-h-screen max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: '#f0feff' }}>
       <div className="absolute top-0 right-0 p-12 text-[120px] font-sans font-black text-black/[0.03] select-none leading-none rotate-90 origin-top-right translate-y-24">LGC</div>
       <div className="flex-1 flex items-center justify-center p-10">
       <motion.div
@@ -123,7 +136,7 @@ const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
         className="w-full max-w-sm space-y-10"
       >
         <header className="space-y-2 text-center">
-          <p className="text-2xl font-sans font-black tracking-tight leading-tight mb-6">Apprends mieux.<br /><span className="text-lgc-orange">Retiens plus.</span></p>
+          <p className="text-2xl font-sans font-black tracking-tight leading-tight mb-6">Apprendre mieux.<br /><span className="text-lgc-orange">Retenir plus.</span></p>
           <img src="/assets/ban.png" alt="La Grande Classe" className="w-full object-cover mb-4" style={{ borderRadius: '4px', maxHeight: '160px' }} />
           <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]" style={{ paddingTop: '1rem' }}>La Grande Classe</p>
           <h1 className="text-6xl font-sans font-black leading-none">Connexion</h1>
@@ -138,7 +151,7 @@ const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-white border border-black/10 p-4 font-sans text-lg outline-none focus:border-lgc-orange transition-colors"
-              placeholder="ex: giusmili"
+              placeholder="Votre login"
               autoComplete="username"
             />
           </div>
@@ -176,7 +189,7 @@ const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
           <div className="flex justify-center">
             <button
               type="submit"
-              disabled={isLoading || !username.trim() || !password.trim()}
+              disabled={isLoading}
               className="btn-primary btn-dark min-w-[400px] py-4 text-base"
             >
               {isLoading ? 'Connexion en cours…' : 'Se connecter'}
@@ -935,6 +948,7 @@ const PersonalizedProgram = () => (
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState('');
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ModuleType>('M2');
   const [isHydrated, setIsHydrated] = useState(false);
   const [progress, setProgress] = useState<UserProgress>({
@@ -1050,6 +1064,7 @@ export default function App() {
     localStorage.removeItem('lgc-session');
     setIsAuthenticated(false);
     setLoggedInUser('');
+    setIsChatbotOpen(false);
   };
 
   const navItems = [
@@ -1089,7 +1104,7 @@ export default function App() {
                         <button 
                           disabled={item.status === 'locked'}
                           onClick={() => setActiveTab(item.moduleId)}
-                          className={`font-sans italic text-xl transition-colors text-left ${item.status === 'completed' ? 'line-through opacity-40' : 'group-hover:text-lgc-orange'}`}
+                          className={`bg-transparent font-sans italic text-xl transition-colors text-left ${item.status === 'completed' ? 'line-through text-green-500' : item.status === 'pending' ? 'text-lgc-orange' : 'group-hover:text-lgc-orange'}`}
                         >
                           {item.label}
                         </button>
@@ -1138,21 +1153,22 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-lgc-cream max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(245, 242, 237, 0.88)' }}>
+    <div className="min-h-screen max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: '#f0feff' }}>
       {/* Editorial Watermark */}
       <div className="absolute top-0 right-0 p-12 text-[120px] font-sans font-black text-black/[0.03] select-none leading-none rotate-90 origin-top-right translate-y-24">
         MARCH
       </div>
 
       {/* Navigation Bar - Artistic Header nav */}
-      <nav className="sticky top-0 left-0 right-0 bg-lgc-cream/80 backdrop-blur-md z-50 font-sans">
+      <nav className="sticky top-0 left-0 right-0 backdrop-blur-md z-50 font-sans border-b" style={{ backgroundColor: 'rgba(180, 245, 249, 0.85)', borderColor: '#b2ecf0' }}>
         <div className="max-w-5xl mx-auto flex items-stretch h-20">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id as ModuleType)}
-              className={`flex-1 flex items-center justify-center gap-2 px-3 transition-all group relative ${
-                activeTab === item.id ? 'text-lgc-orange' : 'text-black opacity-30 hover:opacity-100'
+              style={activeTab === item.id ? { backgroundColor: '#fff' } : {}}
+              className={`nav-item flex-1 flex items-center justify-center gap-2 px-3 transition-all group relative ${
+                activeTab === item.id ? 'text-lgc-orange' : 'text-black opacity-60'
               }`}
             >
               <item.icon size={14} strokeWidth={3} className={activeTab === item.id ? 'animate-pulse' : 'opacity-40 group-hover:opacity-100'} />
@@ -1167,6 +1183,13 @@ export default function App() {
               )}
             </button>
           ))}
+          <button
+            onClick={() => setIsChatbotOpen(true)}
+            className="nav-item flex-shrink-0 flex items-center justify-center gap-2 px-4 transition-all group relative text-black opacity-30 hover:opacity-100 hover:text-lgc-orange"
+          >
+            <MessageCircle size={14} strokeWidth={3} className="opacity-40 group-hover:opacity-100" />
+            <span className="text-[9px] uppercase tracking-widest font-black opacity-0 lg:opacity-30 group-hover:opacity-100 transition-all">Aide</span>
+          </button>
           <button
             onClick={handleLogout}
             className="flex-shrink-0 flex items-center justify-center gap-2 px-4 transition-all group relative text-black opacity-30 hover:opacity-100 hover:text-lgc-orange"
@@ -1191,11 +1214,13 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      <footer className="relative z-10 border-t border-black/10 px-10 py-6 mt-auto">
+      <footer className="relative z-10 border-t px-10 py-6 mt-auto" style={{ borderColor: '#8dd5c7' }}>
         <p className="text-[10px] uppercase tracking-[0.35em] font-black text-lgc-orange text-center">
           Edtech - LGC R&amp;D - 2026
         </p>
       </footer>
+
+      <StudentHelpChatbotModal isOpen={isChatbotOpen} onClose={() => setIsChatbotOpen(false)} />
     </div>
   );
 }
