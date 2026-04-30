@@ -90,8 +90,20 @@ const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError('');
+    if (!username.trim() && !password.trim()) {
+      setError('Veuillez renseigner votre identifiant et votre mot de passe.');
+      return;
+    }
+    if (!username.trim()) {
+      setError('Veuillez renseigner votre identifiant.');
+      return;
+    }
+    if (!password.trim()) {
+      setError('Veuillez renseigner votre mot de passe.');
+      return;
+    }
+    setIsLoading(true);
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
@@ -113,7 +125,7 @@ const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
   };
 
   return (
-    <div className="login-page min-h-screen bg-lgc-cream max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(245, 242, 237, 0.88)' }}>
+    <div className="login-page min-h-screen max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: '#f0feff' }}>
       <div className="absolute top-0 right-0 p-12 text-[120px] font-sans font-black text-black/[0.03] select-none leading-none rotate-90 origin-top-right translate-y-24">LGC</div>
       <div className="flex-1 flex items-center justify-center p-10">
       <motion.div
@@ -167,7 +179,7 @@ const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-lgc-orange text-xs font-mono tracking-wide"
+              className="text-lgc-orange text-xs font-mono tracking-wide bg-orange-50 border border-lgc-orange/20 px-3 py-2 rounded-sm"
             >
               {error}
             </motion.p>
@@ -176,7 +188,7 @@ const LoginScreen = ({ onLogin }: { onLogin: (username: string) => void }) => {
           <div className="flex justify-center">
             <button
               type="submit"
-              disabled={isLoading || !username.trim() || !password.trim()}
+              disabled={isLoading}
               className="btn-primary btn-dark min-w-[400px] py-4 text-base"
             >
               {isLoading ? 'Connexion en cours…' : 'Se connecter'}
@@ -1089,7 +1101,7 @@ export default function App() {
                         <button 
                           disabled={item.status === 'locked'}
                           onClick={() => setActiveTab(item.moduleId)}
-                          className={`font-sans italic text-xl transition-colors text-left ${item.status === 'completed' ? 'line-through opacity-40' : 'group-hover:text-lgc-orange'}`}
+                          className={`bg-transparent font-sans italic text-xl transition-colors text-left ${item.status === 'completed' ? 'line-through text-green-500' : item.status === 'pending' ? 'text-lgc-orange' : 'group-hover:text-lgc-orange'}`}
                         >
                           {item.label}
                         </button>
@@ -1138,21 +1150,22 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-lgc-cream max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(245, 242, 237, 0.88)' }}>
+    <div className="min-h-screen max-w-5xl mx-auto relative shadow-2xl border-x border-black/5 overflow-hidden flex flex-col" style={{ backgroundColor: '#f0feff' }}>
       {/* Editorial Watermark */}
       <div className="absolute top-0 right-0 p-12 text-[120px] font-sans font-black text-black/[0.03] select-none leading-none rotate-90 origin-top-right translate-y-24">
         MARCH
       </div>
 
       {/* Navigation Bar - Artistic Header nav */}
-      <nav className="sticky top-0 left-0 right-0 bg-lgc-cream/80 backdrop-blur-md z-50 font-sans">
+      <nav className="sticky top-0 left-0 right-0 backdrop-blur-md z-50 font-sans border-b" style={{ backgroundColor: 'rgba(180, 245, 249, 0.85)', borderColor: '#b2ecf0' }}>
         <div className="max-w-5xl mx-auto flex items-stretch h-20">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id as ModuleType)}
-              className={`flex-1 flex items-center justify-center gap-2 px-3 transition-all group relative ${
-                activeTab === item.id ? 'text-lgc-orange' : 'text-black opacity-30 hover:opacity-100'
+              style={activeTab === item.id ? { backgroundColor: '#fff' } : {}}
+              className={`nav-item flex-1 flex items-center justify-center gap-2 px-3 transition-all group relative ${
+                activeTab === item.id ? 'text-lgc-orange' : 'text-black opacity-60'
               }`}
             >
               <item.icon size={14} strokeWidth={3} className={activeTab === item.id ? 'animate-pulse' : 'opacity-40 group-hover:opacity-100'} />

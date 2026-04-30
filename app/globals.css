@@ -6,7 +6,7 @@
   --color-lgc-cream: #f5f2ed;
   --color-lgc-orange: #e94e33;
   --color-lgc-ink: #121212;
-  --color-lgc-gray: #5e5d5a;
+  --color-lgc-gray: #f0feff;
   --border-soft: rgba(0, 0, 0, 0.1);
   --border-faint: rgba(0, 0, 0, 0.05);
   --ink-soft: rgba(18, 18, 18, 0.82);
@@ -96,6 +96,11 @@ textarea {
 
 .btn-primary:hover {
   background: var(--color-lgc-orange);
+}
+
+.nav-item:hover {
+  background-color: #fafafa;
+  opacity: 1;
 }
 
 .btn-dark {
