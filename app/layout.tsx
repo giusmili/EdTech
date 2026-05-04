@@ -3,6 +3,28 @@ import { Playfair_Display, Poppins, Space_Grotesk } from "next/font/google";
 import './globals.css';
 import MoleculeBackground from '@/src/MoleculeBackground';
 
+function getMetadataBase() {
+  const explicitUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+  if (explicitUrl) {
+    return new URL(explicitUrl);
+  }
+
+  const vercelUrl =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+
+  if (vercelUrl) {
+    return new URL(`https://${vercelUrl}`);
+  }
+
+  return new URL("http://localhost:3000");
+}
+
+const metadataBase = getMetadataBase();
+const title = "La Grande Classe";
+const description =
+  "Plateforme d'apprentissage adaptative avec parcours editorialisés, mémorisation espacée et suivi de progression.";
+
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -22,9 +44,35 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "La Grande Classe",
-  description: "Parcours d'apprentissage éditorialisé, mémorisation espacée et suivi de progression.",
+  metadataBase,
+  title,
+  description,
+  alternates: {
+    canonical: "/",
+  },
   manifest: "/manifest.json",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: title,
+    title,
+    description,
+    url: "/",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "La Grande Classe, plateforme d'apprentissage adaptative.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+    images: ["/twitter-image.png"],
+  },
   icons: {
     icon: [
       { url: "/favicon/icon-16x16.png", sizes: "16x16", type: "image/png" },
