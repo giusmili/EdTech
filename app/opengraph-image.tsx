@@ -101,14 +101,15 @@ export default function OpenGraphImage() {
             <div
               style={{
                 display: "flex",
-                fontSize: 72,
-                lineHeight: 1.02,
+                flexDirection: "column",
+                fontSize: 68,
+                lineHeight: 1.04,
                 fontWeight: 800,
+                letterSpacing: -1.2,
               }}
             >
-              Apprendre mieux.
-              <br />
-              Progresser durablement.
+              <div>Apprendre mieux.</div>
+              <div>Progresser durablement.</div>
             </div>
             <div
               style={{
