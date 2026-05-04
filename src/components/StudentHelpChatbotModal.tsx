@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { X, Send, Compass } from 'lucide-react';
 
 type ChatMessage = {
   id: string;
@@ -12,16 +12,13 @@ type ChatMessage = {
 const renderSimpleMarkdown = (content: string) => {
   return content.split('\n').map((line, lineIndex) => {
     const segments = line.split(/(\*\*.*?\*\*)/g);
-
     return (
       <span key={`line-${lineIndex}`}>
         {segments.map((segment, segmentIndex) => {
           const isBold = segment.startsWith('**') && segment.endsWith('**') && segment.length >= 4;
-
           if (isBold) {
             return <strong key={`segment-${lineIndex}-${segmentIndex}`}>{segment.slice(2, -2)}</strong>;
           }
-
           return <span key={`segment-${lineIndex}-${segmentIndex}`}>{segment}</span>;
         })}
         {lineIndex < content.split('\n').length - 1 && <br />}
@@ -31,7 +28,7 @@ const renderSimpleMarkdown = (content: string) => {
 };
 
 const CHATBOT_QUICK_ACTIONS = [
-  'Comment commencer mon parcours ?',
+  'Comment commencer ?',
   'À quoi servent les onglets ?',
   'Comment réviser efficacement ?',
   'Que faire après une leçon ?',
@@ -41,12 +38,7 @@ const CHATBOT_WELCOME_MESSAGES: ChatMessage[] = [
   {
     id: 'welcome-1',
     role: 'assistant',
-    content: "Bonjour. Je suis le guide de l'application. Je peux t'expliquer rapidement comment avancer sans te perdre.",
-  },
-  {
-    id: 'welcome-2',
-    role: 'assistant',
-    content: "Commence par le Dashboard, définis ton objectif dans Parcours, puis suis les activités proposées. Tu peux aussi me poser une question précise.",
+    content: "Bonjour. Je suis le guide de l'application. Pose-moi une question ou utilise un raccourci ci-dessous pour comprendre comment avancer.",
   },
 ];
 
@@ -91,6 +83,25 @@ export default function StudentHelpChatbotModal({
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const timer = setTimeout(() => inputRef.current?.focus(), 120);
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, [isOpen, onClose]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -122,14 +133,9 @@ export default function StudentHelpChatbotModal({
     try {
       const response = await fetch('/api/chatbot', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: nextMessages.map((message) => ({
-            role: message.role,
-            content: message.content,
-          })),
+          messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
         }),
       });
 
@@ -146,16 +152,10 @@ export default function StudentHelpChatbotModal({
 
       setMessages((prev) => [
         ...prev,
-        {
-          id: `assistant-${Date.now() + 1}`,
-          role: 'assistant',
-          content: assistantReply,
-        },
+        { id: `assistant-${Date.now() + 1}`, role: 'assistant', content: assistantReply },
       ]);
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Le chatbot n'a pas pu répondre pour le moment.";
-
+      const message = err instanceof Error ? err.message : "Le chatbot n'a pas pu répondre pour le moment.";
       setError(message);
       setMessages((prev) => [
         ...prev,
@@ -172,149 +172,298 @@ export default function StudentHelpChatbotModal({
 
   return (
     <div
+      onClick={onClose}
       style={{
         position: 'fixed',
         inset: 0,
         zIndex: 120,
-        background: 'rgba(18, 18, 18, 0.42)',
+        background: 'rgba(18, 18, 18, 0.48)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '1rem',
+        animation: 'fade-in 0.2s ease both',
       }}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         className="chatbot-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Assistant — Mode d'emploi"
         style={{
           width: '100%',
-          maxWidth: '760px',
-          maxHeight: 'min(88vh, 860px)',
+          maxWidth: '680px',
+          height: 'min(88vh, 740px)',
           background: '#f0feff',
           border: '1px solid #c1e9e0',
-          boxShadow: '0 30px 60px rgba(18, 18, 18, 0.18)',
+          boxShadow: '0 32px 80px rgba(18, 18, 18, 0.22)',
           borderRadius: '8px',
+          display: 'flex',
+          flexDirection: 'column',
           overflow: 'hidden',
-          position: 'relative',
+          animation: 'chatbot-enter 0.32s cubic-bezier(0.22, 1, 0.36, 1) both',
         }}
       >
-        <div className="absolute top-0 right-0 p-12 text-[120px] font-sans font-black text-black/[0.03] select-none leading-none rotate-90 origin-top-right translate-y-24">
-          GUIDE
-        </div>
-
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <header
-            className="border-b border-black/10 px-10 py-6"
-            style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem' }}
-          >
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold text-lgc-orange uppercase tracking-[0.3em]">Assistant étudiant</p>
-              <h2 className="text-5xl font-sans font-black leading-none">Mode d'emploi</h2>
-              <p className="text-sm opacity-40 font-sans italic">Pose une question ou utilise un raccourci pour comprendre l'application.</p>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Fermer l'assistant"
-              className="bg-white border border-black/10"
-              style={{ width: '44px', height: '44px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+        {/* Header */}
+        <header
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '1.25rem 1.75rem',
+            borderBottom: '1px solid #c1e9e0',
+            flexShrink: 0,
+            gap: '1rem',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+            <p
+              style={{
+                fontSize: '10px',
+                fontWeight: 700,
+                color: '#e94e33',
+                letterSpacing: '0.3em',
+                textTransform: 'uppercase',
+                margin: 0,
+              }}
             >
-              <X size={18} />
-            </button>
-          </header>
-
-          <div className="px-10 py-6 border-b border-black/10">
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-              {CHATBOT_QUICK_ACTIONS.map((action) => (
-                <button
-                  key={action}
-                  type="button"
-                  disabled={isLoading}
-                  onClick={() => sendMessage(action)}
-                  className="bg-white border border-black/10 text-[10px] uppercase font-bold tracking-widest"
-                  style={{ padding: '0.85rem 1rem', opacity: isLoading ? 0.45 : 1 }}
-                >
-                  {action}
-                </button>
-              ))}
-            </div>
+              Assistant étudiant
+            </p>
+            <h2
+              style={{
+                fontSize: 'clamp(1.4rem, 4vw, 1.75rem)',
+                fontWeight: 700,
+                letterSpacing: '-0.04em',
+                lineHeight: 1.1,
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <Compass size={22} strokeWidth={1.8} style={{ color: '#e94e33', flexShrink: 0 }} />
+              Mode d'emploi
+            </h2>
           </div>
-
-          <div
-            className="chatbot-messages"
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fermer l'assistant"
+            className="chatbot-close-btn"
             style={{
-              padding: '1.5rem 2.5rem',
-              overflowY: 'auto',
-              maxHeight: '42vh',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1rem',
+              width: '40px',
+              height: '40px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#fff',
+              border: '1px solid #c1e9e0',
+              borderRadius: '4px',
+              flexShrink: 0,
             }}
           >
-            {messages.map((message) => (
-              <div
-                key={message.id}
+            <X size={16} />
+          </button>
+        </header>
+
+        {/* Quick actions */}
+        <div
+          className="chatbot-quick-actions-wrap"
+          style={{
+            padding: '1rem 1.75rem',
+            borderBottom: '1px solid #c1e9e0',
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {CHATBOT_QUICK_ACTIONS.map((action) => (
+              <button
+                key={action}
+                type="button"
+                disabled={isLoading}
+                onClick={() => sendMessage(action)}
+                className="chatbot-quick-action"
                 style={{
+                  padding: '0.55rem 0.9rem',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                  opacity: isLoading ? 0.4 : 1,
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {action}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div
+          className="chatbot-messages"
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '1.5rem 1.75rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
+          }}
+        >
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              style={{
+                alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
+                maxWidth: '80%',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.25rem',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  letterSpacing: '0.28em',
+                  textTransform: 'uppercase',
+                  opacity: 0.38,
                   alignSelf: message.role === 'user' ? 'flex-end' : 'flex-start',
-                  maxWidth: '85%',
+                  paddingInline: '0.25rem',
+                }}
+              >
+                {message.role === 'user' ? 'Vous' : 'Guide'}
+              </span>
+              <div
+                style={{
                   background: message.role === 'user' ? '#121212' : '#ffffff',
                   color: message.role === 'user' ? '#ffffff' : '#121212',
-                  border: message.role === 'user' ? '1px solid #121212' : '1px solid #c1e9e0',
-                  padding: '1rem 1.1rem',
-                  borderRadius: '8px',
+                  border: `1px solid ${message.role === 'user' ? '#121212' : '#c1e9e0'}`,
+                  padding: '0.875rem 1.125rem',
+                  borderRadius:
+                    message.role === 'user'
+                      ? '10px 10px 2px 10px'
+                      : '10px 10px 10px 2px',
                 }}
               >
-                <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40" style={{ marginBottom: '0.6rem' }}>
-                  {message.role === 'user' ? 'Vous' : 'Assistant'}
+                <p style={{ fontSize: '0.875rem', lineHeight: 1.65, margin: 0 }}>
+                  {renderSimpleMarkdown(message.content)}
                 </p>
-                <p className="text-sm leading-relaxed">{renderSimpleMarkdown(message.content)}</p>
               </div>
-            ))}
-            {isLoading && (
+            </div>
+          ))}
+
+          {isLoading && (
+            <div
+              style={{
+                alignSelf: 'flex-start',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.25rem',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  letterSpacing: '0.28em',
+                  textTransform: 'uppercase',
+                  opacity: 0.38,
+                  paddingInline: '0.25rem',
+                }}
+              >
+                Guide
+              </span>
               <div
                 style={{
-                  alignSelf: 'flex-start',
-                  maxWidth: '85%',
                   background: '#ffffff',
-                  color: '#121212',
                   border: '1px solid #c1e9e0',
-                  padding: '1rem 1.1rem',
-                  borderRadius: '8px',
+                  padding: '1rem 1.25rem',
+                  borderRadius: '10px 10px 10px 2px',
+                  display: 'flex',
+                  gap: '5px',
+                  alignItems: 'center',
                 }}
               >
-                <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40" style={{ marginBottom: '0.6rem' }}>
-                  Assistant
-                </p>
-                <p className="text-sm leading-relaxed">Je prépare une réponse…</p>
+                <span className="chatbot-dot" />
+                <span className="chatbot-dot" style={{ animationDelay: '0.16s' }} />
+                <span className="chatbot-dot" style={{ animationDelay: '0.32s' }} />
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          <div className="px-10 py-6 border-t border-black/10" style={{ background: 'rgba(255,255,255,0.55)' }}>
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                await sendMessage(input);
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input footer */}
+        <div
+          style={{
+            padding: '1rem 1.75rem 1.25rem',
+            borderTop: '1px solid #c1e9e0',
+            background: 'rgba(255,255,255,0.6)',
+            flexShrink: 0,
+          }}
+        >
+          {error && (
+            <p
+              style={{
+                fontSize: '11px',
+                color: '#e94e33',
+                fontFamily: 'var(--font-mono)',
+                marginBottom: '0.75rem',
+                margin: '0 0 0.75rem',
               }}
-              className="space-y-4"
             >
-              <label className="block text-[10px] uppercase font-bold tracking-widest opacity-50">Votre question</label>
-              {error && <p className="text-xs text-lgc-orange font-mono">{error}</p>}
-              <div className="chatbot-form-row" style={{ display: 'flex', gap: '0.75rem', alignItems: 'stretch' }}>
-                <input
-                  type="text"
-                  value={input}
-                  disabled={isLoading}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ex : comment suivre mon parcours ?"
-                  className="bg-white border border-black/10 p-4 font-sans text-sm outline-none focus:border-lgc-orange"
-                  style={{ flex: 1, minWidth: 0 }}
-                />
-                <button type="submit" disabled={isLoading} className="btn-primary" style={{ minWidth: '170px', opacity: isLoading ? 0.6 : 1 }}>
-                  {isLoading ? 'Envoi…' : 'Envoyer'}
-                </button>
-              </div>
-            </form>
-          </div>
+              {error}
+            </p>
+          )}
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              await sendMessage(input);
+            }}
+            style={{ display: 'flex', gap: '0.625rem' }}
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              disabled={isLoading}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Pose ta question…"
+              className="chatbot-input"
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '0.875rem 1.125rem',
+                background: '#fff',
+                border: '1px solid #c1e9e0',
+                borderRadius: '4px',
+                fontSize: '0.875rem',
+                fontFamily: 'var(--font-sans)',
+                outline: 'none',
+              }}
+            />
+            <button
+              type="submit"
+              disabled={isLoading || !input.trim()}
+              className="btn-primary chatbot-send-btn"
+              style={{
+                padding: '0.875rem 1.25rem',
+                opacity: isLoading || !input.trim() ? 0.42 : 1,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                flexShrink: 0,
+              }}
+            >
+              <Send size={14} />
+              <span>Envoyer</span>
+            </button>
+          </form>
         </div>
       </div>
     </div>

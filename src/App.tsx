@@ -11,6 +11,7 @@ import { Home, Map, BookOpen, Clock, Gamepad2, User, ChevronRight, CheckCircle2,
 import type { ModuleType, LearningStep, UserProgress, Flashcard } from './types';
 import MoleculeBackground from './MoleculeBackground';
 import StudentHelpChatbotModal from './components/StudentHelpChatbotModal';
+import LessonVideo from './components/LessonVideo';
 
 // Functional Initial State
 const INITIAL_STEPS: LearningStep[] = [
@@ -334,20 +335,12 @@ const CourseReader = ({ onComplete }: { onComplete: () => void }) => {
         </div>
         
         <div className="text-sm leading-relaxed text-lgc-ink/70 space-y-6 flex-1">
-          <p>Imagine la Grèce, il y a 2500 ans. Démocrite coupe un morceau de pain en deux. Puis en deux. Puis encore...</p>
+          <p>Imagine la Grèce, il y a 2500 ans. Démocrite coupe un morceau de pierre en deux. Puis en deux. Puis encore...</p>
           {page === 1 ? (
-            <div className="aspect-[3/4] bg-white border border-black/5 relative overflow-hidden group">
-               <img 
-                 src="https://picsum.photos/seed/atom-greece/600/800?grayscale&blur=1" 
-                 alt="Illustration conceptuelle de l'atome"
-                 className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-                 referrerPolicy="no-referrer"
-               />
-               <div className="absolute inset-0 bg-lgc-orange/5 mix-blend-multiply"></div>
-               <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-white to-transparent">
-                 <p className="text-[10px] text-lgc-ink uppercase tracking-widest font-bold">Concept: Fragmentation Infinie</p>
-               </div>
-            </div>
+            <LessonVideo
+              src="/video/atome-1080.mp4"
+              caption="Concept : Fragmentation Infinie"
+            />
           ) : (
             <div className="bg-lgc-orange/5 p-6 border-l-4 border-lgc-orange">
               <p className="font-serif text-xl italic leading-tight">"Rien n'existe que les atomes et le vide ; tout le reste n'est qu'opinion."</p>
