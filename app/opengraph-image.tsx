@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
 import { ImageResponse } from "next/og";
 
 export const alt = "La Grande Classe, plateforme d'apprentissage adaptative.";
@@ -8,9 +6,6 @@ export const size = {
   height: 630,
 };
 export const contentType = "image/png";
-
-const logoPath = path.join(process.cwd(), "public", "favicon", "logo-lgc-apprentissage.png");
-const logoDataUri = `data:image/png;base64,${readFileSync(logoPath).toString("base64")}`;
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -64,25 +59,25 @@ export default function OpenGraphImage() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 22,
+              gap: 18,
             }}
           >
-            <img
-              src={logoDataUri}
-              alt=""
-              width={88}
-              height={88}
-              style={{ borderRadius: 24 }}
-            />
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 4,
+                gap: 6,
               }}
             >
-              <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: 2.5 }}>
-                LA GRANDE CLASSE
+              <div
+                style={{
+                  fontSize: 21,
+                  fontWeight: 700,
+                  letterSpacing: 2.8,
+                  textTransform: "uppercase",
+                }}
+              >
+                La Grande Classe
               </div>
               <div style={{ fontSize: 24, opacity: 0.82 }}>
                 Plateforme d'apprentissage adaptative
