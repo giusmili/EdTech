@@ -260,7 +260,6 @@ const Dashboard = ({ progress, activeGoal, onStartSession, username }: { progres
         <p className="text-lgc-orange font-bold text-[10px] uppercase tracking-[0.2em]">Tableau de Bord</p>
         <h1 className="text-6xl font-sans font-black mt-1 leading-none">Bonjour {username}</h1>
       </div>
-      <div className="w-12 h-12 border border-black/20 rounded-full flex items-center justify-center font-sans text-xl border-lgc-orange text-lgc-orange">L</div>
     </header>
 
     <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
@@ -1153,42 +1152,36 @@ export default function App() {
       </div>
 
       {/* Navigation Bar - Artistic Header nav */}
-      <nav className="sticky top-0 left-0 right-0 backdrop-blur-md z-50 font-sans border-b" style={{ backgroundColor: 'rgba(180, 245, 249, 0.85)', borderColor: '#b2ecf0' }}>
+      <nav className="sticky top-0 left-0 right-0 z-50 font-sans border-b" style={{ backgroundColor: '#222', borderColor: '#333' }}>
         <div className="max-w-5xl mx-auto flex items-stretch h-20">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id as ModuleType)}
-              style={activeTab === item.id ? { backgroundColor: '#fff' } : {}}
-              className={`nav-item flex-1 flex items-center justify-center gap-2 px-3 transition-all group relative ${
-                activeTab === item.id ? 'text-lgc-orange' : 'text-black opacity-60'
-              }`}
+              style={{ backgroundColor: activeTab === item.id ? '#111' : '#95a5a6', borderRight: '1px solid #bdc3c7' }}
+              className="nav-item flex-1 flex items-center justify-center gap-2 px-3 transition-all relative text-white"
             >
-              <item.icon size={14} strokeWidth={3} className={activeTab === item.id ? 'animate-pulse' : 'opacity-40 group-hover:opacity-100'} />
-              <span className={`text-[9px] uppercase tracking-widest font-black transition-all ${activeTab === item.id ? 'opacity-100' : 'opacity-0 lg:opacity-30 group-hover:opacity-100'}`}>
+              <item.icon size={14} strokeWidth={3} />
+              <span className="text-[9px] uppercase tracking-widest font-black">
                 {item.label}
               </span>
-              {activeTab === item.id && (
-                <motion.div
-                  layoutId="activeTabMarker"
-                  className="absolute bottom-0 left-4 right-4 h-0.5 bg-lgc-orange"
-                />
-              )}
             </button>
           ))}
           <button
             onClick={() => setIsChatbotOpen(true)}
-            className="nav-item flex-shrink-0 flex items-center justify-center gap-2 px-4 transition-all group relative text-black opacity-30 hover:opacity-100 hover:text-lgc-orange"
+            className="nav-item flex-shrink-0 flex items-center justify-center gap-2 px-4 transition-all text-white"
+            style={{ backgroundColor: '#95a5a6', borderRight: '1px solid #bdc3c7' }}
           >
-            <MessageCircle size={14} strokeWidth={3} className="opacity-40 group-hover:opacity-100" />
-            <span className="text-[9px] uppercase tracking-widest font-black opacity-0 lg:opacity-30 group-hover:opacity-100 transition-all">Aide</span>
+            <MessageCircle size={14} strokeWidth={3} />
+            <span className="text-[9px] uppercase tracking-widest font-black">Aide</span>
           </button>
           <button
             onClick={handleLogout}
-            className="flex-shrink-0 flex items-center justify-center gap-2 px-4 transition-all group relative text-black opacity-30 hover:opacity-100 hover:text-lgc-orange"
+            className="nav-item flex-shrink-0 flex items-center justify-center gap-2 px-4 transition-all text-white"
+            style={{ backgroundColor: '#95a5a6' }}
           >
-            <LogOut size={14} strokeWidth={3} className="opacity-40 group-hover:opacity-100" />
-            <span className="text-[9px] uppercase tracking-widest font-black opacity-0 lg:opacity-30 group-hover:opacity-100 transition-all">Quitter</span>
+            <LogOut size={14} strokeWidth={3} />
+            <span className="text-[9px] uppercase tracking-widest font-black">Quitter</span>
           </button>
         </div>
       </nav>
