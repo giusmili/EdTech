@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/opengraph-image.png",
+        url: "/assets/opengraph-image.png",
         width: 1200,
         height: 630,
         alt: "La Grande Classe, plateforme d'apprentissage adaptative.",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["/twitter-image.png"],
+    images: ["/assets/opengraph-image.png"],
   },
   icons: {
     icon: [
